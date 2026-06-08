@@ -41,6 +41,7 @@ c12="\e[94m" # Bright Blue
 c13="\e[95m" # Bright Violet
 c14="\e[96m" # Bright Arch Blue
 c15="\e[97m" # Actual White
+c16="\e[38;5;208m" # Orange
 c20="\e[0m" # Normal
 c21="\e[0;1m" # Bold
 
