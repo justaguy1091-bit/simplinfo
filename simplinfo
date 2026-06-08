@@ -27,7 +27,7 @@ current_year="$(date +%Y)"
 
 # COLORS
 c1="\e[31m" # Red
-c2="\e[32m" # Light Green
+c2="\e[32m" # Green
 c3="\e[33m" # Yellow
 c4="\e[34m" # Calm Blue
 c5="\e[35m" # Violet
@@ -35,7 +35,12 @@ c6="\e[36m" # Arch Blue
 c7="\e[37m" # White
 c8="\e[90m" # Grey
 c9="\e[91m" # Bright Red
-c10="\e[97m" # Actual White
+c10="\e[92m" # Bright Green
+c11="\e[93m" # Bright Yellow
+c12="\e[94m" # Bright Blue
+c13="\e[95m" # Bright Violet
+c14="\e[96m" # Bright Arch Blue
+c15="\e[97m" # Actual White
 c20="\e[0m" # Normal
 c21="\e[0;1m" # Bold
 
@@ -57,6 +62,7 @@ msg() {
     # \033[1;32m = Bold Green, \033[0m = Reset
     printf '\033[1;32m[+] %s\033[0m\n' "$*"
 }
+
 # The display
 
 echo ""
