@@ -21,7 +21,7 @@ sudo nano simplinfo
 sudo vi simplinfo
 
 ## Step 4
-Paste the Simplinfo source code and save the file.
+Paste the Simplinfo (or “Simplinfo LE” if you’re on Linux) source code and save the file.
 
 ## Step 5
 Make it executable:
