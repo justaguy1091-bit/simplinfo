@@ -22,8 +22,12 @@ RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v
         printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
     }
 ')"
-Best_anime="Ganbare Nakamura-kun!!"
 current_year="$(date +%Y)"
+if [ -s "$HOME/.bestanime" ]; then
+    read -r Best_anime < "$HOME/.bestanime"
+else
+    Best_anime="Ganbare Nakamura-kun!!"
+fi
 
 # COLORS
 c1="\e[31m" # Red
@@ -78,5 +82,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo version 1.2         2026-${current_year}"
+echo -e "${c20}     Simplinfo version 1.3         2026-${current_year}"
 echo ""
