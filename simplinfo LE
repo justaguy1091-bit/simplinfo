@@ -1,8 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 
 user="${USER}"
 HOST="$(hostname)"
-DIS="$(lsb_release -sd)"
+if command -v lsb_release >/dev/null 2>&1; then
+    DIS="$(lsb_release -sd)"
+elif [ -f /etc/os-release ]; then
+    . /etc/os-release
+    DIS="$PRETTY_NAME"
+else
+    DIS="Unknown Linux"
+fi
 OS="$(uname -sr)"
 DE="${XDG_CURRENT_DESKTOP}"
 Shell="$(basename "$SHELL")"
@@ -10,7 +17,6 @@ CPU="$(lscpu | grep 'Model name' | sed 's/.*: *//')"
 GPU="$(glxinfo -B | awk -F': ' '/Device:/ {print $2; exit}')"
 RAM="$(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
 current_year="$(date +%Y)"
-
 if [ -s "$HOME/.bestanime" ]; then
     Best_anime="$(cat "$HOME/.bestanime")"
 else
@@ -71,5 +77,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo LE version 1.3        2026-${current_year}"
+echo -e "${c20}     Simplinfo LE version 1.4        2026-${current_year}"
 echo ""
