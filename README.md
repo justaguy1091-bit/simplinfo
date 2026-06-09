@@ -1,5 +1,8 @@
 # Simplinfo Installation
 
+## Dependencies
+As of version 1.3, you may need mesa-utils if you're on Linux. On FreeBSD, you do not need any 3rd party dependencies.
+
 ## Step 1
 Create a directory for the project:
 
