@@ -14,7 +14,6 @@ else
     DIS="Unknown Linux"
 fi
 OS="$(uname -sr)"
-DE="${XDG_CURRENT_DESKTOP}"
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
     DE="$(XDG_CURRENT_DESKTOP)"
 elif command -v wmctrl >/dev/null 2>&1; then
