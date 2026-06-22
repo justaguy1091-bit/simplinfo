@@ -3,31 +3,18 @@
 ## Dependencies
 As of version 1.42, you do not need ANY dependencies as far as I'm aware.
 
-## Step 1
-Create the file in your home directory:
+## Install Command
 
-[text editor] simplinfo
+Run the following command in your terminal to automatically install **simplinfo Linux Edition**
+```bash
+sudo curl -L "https://raw.githubusercontent.com/justaguy1091-bit/simplinfo/refs/heads/main/simplinfo%20LE" -o /usr/local/bin/simplinfo && sudo chmod +x /usr/local/bin/simplinfo
+```
 
-Examples:
-ee simplinfo
-nano simplinfo
-vi simplinfo
+## Manual Install
 
-## Step 2
-Paste the Simplinfo (or “Simplinfo LE” if you’re on Linux) source code and save the file.
+Manual install has been moved to the docs folder.
 
-## Step 3
-Make it executable:
-
-chmod +x simplinfo
-
-## Step 4
-Run Simplinfo:
-
-./simplinfo
-
-## Step 5
-Enjoy!
+[Click here to view the manual install instructions](https://github.com/justaguy1091-bit/simplinfo/blob/main/docs/installation/manual.md)
 
 # How to set your favorite Anime (Optional)
 

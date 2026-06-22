@@ -1,6 +1,9 @@
 #!/bin/bash
 
+###   DEF USER   ###
 user="${USER}"
+
+###   DEF HOSTNAME   ###
 HOST="$(hostname)"
 if command -v lsb_release >/dev/null 2>&1; then
     DIS="$(lsb_release -sd)"
@@ -10,7 +13,11 @@ elif [ -f /etc/os-release ]; then
 else
     DIS="Unknown Linux"
 fi
+
+###   DEF OPERATING SYSTEM   ###
 OS="$(uname -sr)"
+
+###   DEF DESKTOP ENVIRONMENT   ###
 if [ -n "$XDG_CURRENT_DESKTOP" ]; then
     DE="$(XDG_CURRENT_DESKTOP)"
 elif command -v wmctrl >/dev/null 2>&1; then
@@ -18,7 +25,11 @@ elif command -v wmctrl >/dev/null 2>&1; then
 else
     DE="Unknown DE or WM"
 fi
+
+###   DEF DVI   ###
 DVI="$(printf "%s %s" "$(cat /sys/devices/virtual/dmi/id/sys_vendor)" "$(cat /sys/devices/virtual/dmi/id/product_name)")"
+
+###   DEF CENTRAL PROCESSING UNIT   ###
 if command -v lscpu >/dev/null 2>&1; then
     CPU="$(lscpu | grep 'Model name' | sed 's/.*: *//')"
 elif command -v awk >/dev/null 2>&1; then
@@ -26,6 +37,8 @@ elif command -v awk >/dev/null 2>&1; then
 else 
     CPU="Unknown CPU"
 fi
+
+###   DEF GRAPHICS PROCESSING UNIT   ###
 if command -v glxinfo >/dev/null 2>&1; then
     GPU="$(glxinfo -B | awk -F': ' '/Device:/ {print $2; exit}')"
 elif command -v lspci >/dev/null 2>&1; then
@@ -33,8 +46,13 @@ elif command -v lspci >/dev/null 2>&1; then
 else
     GPU="Unknown GPU"
 fi
+
+###   DEF MEMORY   ###
 RAM="$(free -h | awk '/^Mem:/ {print $3 "/" $2}')"
-current_year="$(date +%Y)"
+
+###   DEF MISC   ###
+CURRENT_YEAR="$(date +%Y)"
+UPTIME="$(uptime -p | sed 's/up //')"
 if [ -s "$HOME/.bestanime" ]; then
     Best_anime="$(cat "$HOME/.bestanime")"
 else
@@ -73,8 +91,9 @@ echo -e "${c2}     Device:${c20} ${DVI}"
 echo -e "${c6}     CPU:${c20} ${CPU}"
 echo -e "${c4}     GPU:${c20} ${GPU}"
 echo -e "${c5}     RAM:${c20} ${RAM}"
+echo -e "${c8}     Uptime:${c20} ${UPTIME}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo LE version 1.43        2026-${current_year}"
+echo -e "${c20}     Simplinfo LE version 1.43        2026-${CURRENT_YEAR}"
 echo ""
