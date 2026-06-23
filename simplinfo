@@ -9,7 +9,7 @@ OS="$(uname -sr)"
 DE="${XDG_CURRENT_DESKTOP}"
 
 # Hardware Info
-DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
+DVI="$(printf "%s %s" "$(cat /sys/devices/virtual/dmi/id/sys_vendor)" "$(cat /sys/devices/virtual/dmi/id/product_name)")"
 CPU="$(sysctl -n hw.model)"
 GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
 RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count hw.pagesize | awk '
@@ -73,5 +73,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo version 2.0      2026-${current_year}"
+echo -e "${c20}     Simplinfo version 2.01      2026-${current_year}"
 echo ""
