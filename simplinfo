@@ -1,9 +1,14 @@
 #!/bin/sh
 
+# User and Host
 user="${USER}"
 HOST="$(hostname)"
+
+# Software Info
 OS="$(uname -sr)"
 DE="${XDG_CURRENT_DESKTOP}"
+
+# Hardware Info
 DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
 CPU="$(sysctl -n hw.model)"
 GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
@@ -22,6 +27,9 @@ RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v
         printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
     }
 ')"
+
+# Misc. Info
+UPTIME="$(uptime | sed -E 's/.*(up .*), [0-9]+ user.*/\1/')"
 current_year="$(date +%Y)"
 if [ -s "$HOME/.bestanime" ]; then
     read -r Best_anime < "$HOME/.bestanime"
@@ -46,6 +54,7 @@ c13="\e[95m" # Bright Violet
 c14="\e[96m" # Bright Arch Blue
 c15="\e[97m" # Actual White
 c16="\e[38;5;208m" # Orange
+c17="\e[38;5;219m" # Pink
 c20="\e[0m" # Normal
 c21="\e[0;1m" # Bold
 
@@ -54,8 +63,9 @@ c21="\e[0;1m" # Bold
 echo ""
 echo -e "${c21}${user}@${HOST}${c20}"
 echo
-echo -e "${c1}     OS:${c20} ${OS}"
-echo -e "${c16}     Desktop Environment:${c20} ${DE}"
+echo -e "${c17}     OS:${c20} ${OS}"
+echo -e "${c1}     Desktop Environment:${c20} ${DE}"
+echo -e "${c16}     Uptime:${c20} ${UPTIME}"
 echo -e "${c11}     Device:${c20} ${DVI}"
 echo -e "${c2}     GPU:${c20} ${GPU}"
 echo -e "${c4}     CPU:${c20} ${CPU}"
@@ -63,5 +73,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo version 1.4         2026-${current_year}"  
+echo -e "${c20}     Simplinfo version 2.0      2026-${current_year}"
 echo ""
