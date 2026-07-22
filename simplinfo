@@ -9,24 +9,47 @@ OS="$(uname -sr)"
 DE="${XDG_CURRENT_DESKTOP}"
 
 # Hardware Info
-DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
-CPU="$(sysctl -n hw.model)"
-GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
-RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count hw.pagesize | awk '
-    NR==1 {total_pages=$1}
-    NR==2 {free_pages=$1}
-    NR==3 {inactive_pages=$1}
-    NR==4 {
-        page_bytes=$1;
+kernel="$(uname -s)"
+case "$kernel" in
+    FreeBSD)
+        DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
+        CPU="$(sysctl -n hw.model)"
+        GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
+        RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count hw.pagesize | awk '
+            NR==1 {total_pages=$1}
+            NR==2 {free_pages=$1}
+            NR==3 {inactive_pages=$1}
+            NR==4 {
+                page_bytes=$1;
 
-        total_gb = (total_pages * page_bytes) / (1024^3);
+                total_gb = (total_pages * page_bytes) / (1024^3);
 
-        available_gb = ((free_pages + inactive_pages) * page_bytes) / (1024^3);
-        used_gb = total_gb - available_gb;
+                available_gb = ((free_pages + inactive_pages) * page_bytes) / (1024^3);
+                used_gb = total_gb - available_gb;
 
-        printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
-    }
-')"
+                printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
+            }
+        ')"
+        ;;
+    OpenBSD)
+        DVI="$(printf "%s %s" "$(sysctl -n hw.vendor 2>/dev/null)" "$(sysctl -n hw.product 2>/dev/null)")"
+        CPU="$(sysctl -n hw.model)"
+        GPU="$(pcidump -v 2>/dev/null | awk '
+            /^ [0-9]+:[0-9]+:[0-9]+:/ {name=$0; sub(/^ [0-9]+:[0-9]+:[0-9]+: /, "", name)}
+            /VGA compatible controller|3D controller|Display controller/ {print name; exit}
+        ')"
+        RAM="$(top -b -d1 2>/dev/null | awk -F'[:/]' '/^Memory:/{
+            gsub(/M/,"",$3); gsub(/M/,"",$4);
+            printf "%.1fG Used / %.1fG Total\n", $3/1024, $4/1024
+        }')"
+        ;;
+    *)
+        DVI="Unknown Device"
+        CPU="Unknown CPU"
+        GPU="Unknown GPU"
+        RAM="Unknown RAM"
+        ;;
+esac
 
 # Misc. Info
 UPTIME="$(uptime | sed -E 's/.*(up .*), [0-9]+ user.*/\1/')"
@@ -73,5 +96,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo version 2.0      2026-${current_year}"
+echo -e "${c20}     Simplinfo version 2.1      2026-${current_year}"
 echo ""
