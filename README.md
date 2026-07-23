@@ -12,7 +12,7 @@ sudo curl -L "https://raw.githubusercontent.com/justaguy1091-bit/simplinfo/refs/
 
 ## Manual Install
 
-Manual install has been moved to the docs folder.
+Manual install for both Simplinfo (BSD) and Simplinfo LE has been moved to the docs folder.
 
 [Click here to view the manual install instructions](https://github.com/justaguy1091-bit/simplinfo/blob/main/docs/installation/manual.md)
 
