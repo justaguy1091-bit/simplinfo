@@ -2,8 +2,13 @@
 
 # User and Host
 user="${USER}"
-HOST="$(hostname)"
-
+if command -v hostname >/dev/null 2>&1; then
+    HOST="$(hostname)"
+elif command -v uname >/dev/null 2>&1; then
+    HOST="$(uname -n)"
+else
+    HOST=""
+fi
 # Software Info
 if command -v lsb_release >/dev/null 2>&1; then
     DIS="$(lsb_release -sd)"
@@ -28,7 +33,7 @@ if command -v lscpu >/dev/null 2>&1; then
     CPU="$(lscpu | grep 'Model name' | sed 's/.*: *//')"
 elif command -v awk >/dev/null 2>&1; then
     CPU="$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)"
-else 
+else
     CPU="Unknown CPU"
 fi
 if command -v lspci >/dev/null 2>&1; then
@@ -86,5 +91,5 @@ echo -e "${c5}     RAM:${c20} ${RAM}"
 echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo LE version 2.01        2026-${CURRENT_YEAR}"
+echo -e "${c20}     Simplinfo LE version 2.1        2026-${CURRENT_YEAR}"
 echo ""
