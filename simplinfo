@@ -9,24 +9,50 @@ OS="$(uname -sr)"
 DE="${XDG_CURRENT_DESKTOP}"
 
 # Hardware Info
-DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
-CPU="$(sysctl -n hw.model)"
-GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
-RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count hw.pagesize | awk '
-    NR==1 {total_pages=$1}
-    NR==2 {free_pages=$1}
-    NR==3 {inactive_pages=$1}
-    NR==4 {
-        page_bytes=$1;
+kernel="$(uname -s)"
+case "$kernel" in
+    FreeBSD)
+        DVI="$(printf "%s %s" "$(kenv smbios.system.maker)" "$(kenv smbios.system.product)")"
+        CPU="$(sysctl -n hw.model)"
+        GPU="$(pciconf -lv | awk -F"'" '/vgapci/{getline; getline; print $2}')"
+        RAM="$(sysctl -n vm.stats.vm.v_page_count vm.stats.vm.v_free_count vm.stats.vm.v_inactive_count hw.pagesize | awk '
+            NR==1 {total_pages=$1}
+            NR==2 {free_pages=$1}
+            NR==3 {inactive_pages=$1}
+            NR==4 {
+                page_bytes=$1;
 
-        total_gb = (total_pages * page_bytes) / (1024^3);
+                total_gb = (total_pages * page_bytes) / (1024^3);
 
-        available_gb = ((free_pages + inactive_pages) * page_bytes) / (1024^3);
-        used_gb = total_gb - available_gb;
+                available_gb = ((free_pages + inactive_pages) * page_bytes) / (1024^3);
+                used_gb = total_gb - available_gb;
 
-        printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
-    }
-')"
+                printf "%.1fG Used / %.0fG Total\n", used_gb, total_gb
+            }
+        ')"
+        ;;
+    OpenBSD)
+        DVI="$(printf "%s %s" "$(sysctl -n hw.vendor 2>/dev/null)" "$(sysctl -n hw.product 2>/dev/null)")"
+        CPU="$(sysctl -n hw.model)"
+        GPU="$(pcidump -v 2>/dev/null | awk '
+            /^ [0-9]+:[0-9]+:[0-9]+:/ {name=$0; sub(/^ [0-9]+:[0-9]+:[0-9]+: /, "", name)}
+            /VGA compatible controller|3D controller|Display controller/ {print name; exit}
+        ')"
+        if [ -z "$GPU" ]; then
+            GPU="Unavailable (try running as root/doas)"
+        fi
+        RAM="$(top -b -d1 2>/dev/null | awk -F'[:/]' '/^Memory:/{
+            gsub(/M/,"",$3); gsub(/M/,"",$4);
+            printf "%.1fG Used / %.1fG Total\n", $3/1024, $4/1024
+        }')"
+        ;;
+    *)
+        DVI="Unknown Device"
+        CPU="Unknown CPU"
+        GPU="Unknown GPU"
+        RAM="Unknown RAM"
+        ;;
+esac
 
 # Misc. Info
 UPTIME="$(uptime | sed -E 's/.*(up .*), [0-9]+ user.*/\1/')"
@@ -38,40 +64,40 @@ else
 fi
 
 # COLORS
-c1="\e[31m" # Red
-c2="\e[32m" # Green
-c3="\e[33m" # Yellow
-c4="\e[34m" # Calm Blue
-c5="\e[35m" # Violet
-c6="\e[36m" # Arch Blue
-c7="\e[37m" # White
-c8="\e[90m" # Grey
-c9="\e[91m" # Bright Red
-c10="\e[92m" # Bright Green
-c11="\e[93m" # Bright Yellow
-c12="\e[94m" # Bright Blue
-c13="\e[95m" # Bright Violet
-c14="\e[96m" # Bright Arch Blue
-c15="\e[97m" # Actual White
-c16="\e[38;5;208m" # Orange
-c17="\e[38;5;219m" # Pink
-c20="\e[0m" # Normal
-c21="\e[0;1m" # Bold
+c1="$(printf '\033[31m')" # Red
+c2="$(printf '\033[32m')" # Green
+c3="$(printf '\033[33m')" # Yellow
+c4="$(printf '\033[34m')" # Calm Blue
+c5="$(printf '\033[35m')" # Violet
+c6="$(printf '\033[36m')" # Arch Blue
+c7="$(printf '\033[37m')" # White
+c8="$(printf '\033[90m')" # Grey
+c9="$(printf '\033[91m')" # Bright Red
+c10="$(printf '\033[92m')" # Bright Green
+c11="$(printf '\033[93m')" # Bright Yellow
+c12="$(printf '\033[94m')" # Bright Blue
+c13="$(printf '\033[95m')" # Bright Violet
+c14="$(printf '\033[96m')" # Bright Arch Blue
+c15="$(printf '\033[97m')" # Actual White
+c16="$(printf '\033[38;5;208m')" # Orange
+c17="$(printf '\033[38;5;219m')" # Pink
+c20="$(printf '\033[0m')" # Normal
+c21="$(printf '\033[0;1m')" # Bold
 
 # The display
 
-echo ""
-echo -e "${c21}${user}@${HOST}${c20}"
-echo
-echo -e "${c17}     OS:${c20} ${OS}"
-echo -e "${c1}     Desktop Environment:${c20} ${DE}"
-echo -e "${c16}     Uptime:${c20} ${UPTIME}"
-echo -e "${c11}     Device:${c20} ${DVI}"
-echo -e "${c2}     GPU:${c20} ${GPU}"
-echo -e "${c4}     CPU:${c20} ${CPU}"
-echo -e "${c5}     RAM:${c20} ${RAM}"
-echo -e "${c8}     The Best Anime:${c21} ${Best_anime}"
-echo
-echo
-echo -e "${c20}     Simplinfo version 2.0      2026-${current_year}"
-echo ""
+printf '\n'
+printf '%s\n' "${c21}${user}@${HOST}${c20}"
+printf '\n'
+printf '%s\n' "${c17}     OS:${c20} ${OS}"
+printf '%s\n' "${c1}     Desktop Environment:${c20} ${DE}"
+printf '%s\n' "${c16}     Uptime:${c20} ${UPTIME}"
+printf '%s\n' "${c11}     Device:${c20} ${DVI}"
+printf '%s\n' "${c2}     GPU:${c20} ${GPU}"
+printf '%s\n' "${c4}     CPU:${c20} ${CPU}"
+printf '%s\n' "${c5}     RAM:${c20} ${RAM}"
+printf '%s\n' "${c8}     The Best Anime:${c21} ${Best_anime}"
+printf '\n'
+printf '\n'
+printf '%s\n' "${c20}     Simplinfo version 2.1      2026-${current_year}"
+printf '\n'
