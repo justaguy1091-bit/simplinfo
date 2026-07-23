@@ -6,7 +6,13 @@ HOST="$(hostname)"
 
 # Software Info
 OS="$(uname -sr)"
-DE="${XDG_CURRENT_DESKTOP}"
+if [ -n "$XDG_CURRENT_DESKTOP" ]; then
+    DE="${XDG_CURRENT_DESKTOP}"
+elif command -v wmctrl >/dev/null 2>&1; then
+    DE="$(wmctrl -m | awk -F': ' '/^Name/ {print $2}')"
+else
+    DE="Unknown DE or WM"
+fi
 
 # Hardware Info
 kernel="$(uname -s)"
@@ -46,6 +52,24 @@ case "$kernel" in
             printf "%.1fG Used / %.1fG Total\n", $3/1024, $4/1024
         }')"
         ;;
+    Linux)
+        DVI="$(printf "%s %s" "$(cat /sys/devices/virtual/dmi/id/sys_vendor 2>/dev/null)" "$(cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null)")"
+        if command -v lscpu >/dev/null 2>&1; then
+            CPU="$(lscpu | grep 'Model name' | sed 's/.*: *//')"
+        elif command -v awk >/dev/null 2>&1; then
+            CPU="$(awk -F': ' '/model name/ {print $2; exit}' /proc/cpuinfo)"
+        else
+            CPU="Unknown CPU"
+        fi
+        if command -v lspci >/dev/null 2>&1; then
+            GPU="$(lspci | awk -F ': ' '/VGA|3D/ {print $2; exit}')"
+        elif command -v glxinfo >/dev/null 2>&1; then
+            GPU="$(glxinfo -B | awk -F': ' '/Device:/ {print $2; exit}')"
+        else
+            GPU="Unknown GPU"
+        fi
+        RAM="$(free -h | awk '/^Mem:/ {print $3 " Used / " $2 " Total"}')"
+        ;;
     *)
         DVI="Unknown Device"
         CPU="Unknown CPU"
@@ -55,7 +79,7 @@ case "$kernel" in
 esac
 
 # Misc. Info
-UPTIME="$(uptime | sed -E 's/.*(up .*), [0-9]+ user.*/\1/')"
+UPTIME="$(uptime | sed -E 's/.*up +(.*), +[0-9]+ user.*/\1/' | tr -s ' ')"
 current_year="$(date +%Y)"
 if [ -s "$HOME/.bestanime" ]; then
     read -r Best_anime < "$HOME/.bestanime"
