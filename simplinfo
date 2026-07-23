@@ -123,5 +123,5 @@ printf '%s\n' "${c5}     RAM:${c20} ${RAM}"
 printf '%s\n' "${c8}     The Best Anime:${c21} ${Best_anime}"
 printf '\n'
 printf '\n'
-printf '%s\n' "${c20}     Simplinfo version 2.1      2026-${current_year}"
+printf '%s\n' "${c20}     Simplinfo version 2.2      2026-${current_year}"
 printf '\n'
