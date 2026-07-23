@@ -48,5 +48,5 @@ echo -e "${c6}     Desktop Environment:${c20} ${DE}"
 echo -e "${c5}     The Best Anime:${c21} ${Best_anime}"
 echo
 echo
-echo -e "${c20}     Simplinfo core LE version 2.01        2026-${CURRENT_YEAR}"
+echo -e "${c20}     Simplinfo core LE version 2.1        2026-${CURRENT_YEAR}"
 echo ""
